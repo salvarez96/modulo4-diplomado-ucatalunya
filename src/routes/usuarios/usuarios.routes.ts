@@ -1,13 +1,14 @@
 import express from "express";
-import { createUsuarios, deleteUsuarios, getUsuarios, getUsuariosById, updateUsuarios } from "../../controllers/usuarios.controller";
+import * as userController from "../../controllers/usuarios.controller";
 
 const usuariosRoutes = express.Router()
 
-usuariosRoutes.get('/', [getUsuarios])
-usuariosRoutes.get('/:id', [getUsuariosById])
-usuariosRoutes.post('/', [createUsuarios])
-usuariosRoutes.put('/:id', [updateUsuarios])
-usuariosRoutes.delete('/:id', [deleteUsuarios])
+usuariosRoutes.get('/', [userController.getUsuarios])
+usuariosRoutes.get('/:id', [userController.getUsuariosById])
+usuariosRoutes.post('/', [userController.createUsuarios])
+usuariosRoutes.post('/login', [userController.loginUsuario])
+usuariosRoutes.put('/:id', [userController.updateUsuarios])
+usuariosRoutes.delete('/:id', [userController.deleteUsuarios])
 
 export { usuariosRoutes }
 

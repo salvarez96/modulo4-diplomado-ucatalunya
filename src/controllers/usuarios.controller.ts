@@ -2,6 +2,8 @@ import { PrismaClient } from "@prisma/client";
 import { Request, Response } from "express";
 import { Helpers } from "./helpers";
 import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
+import { SECRET_KEY, TOKEN_LIFETIME } from "../config";
 
 const prisma = new PrismaClient()
 const helpers = new Helpers()
@@ -18,8 +20,8 @@ async function getUsuarios(req: Request, res: Response) {
     const customers = await prisma.usuarios.findMany({
       select: hidePassword
     })
-    res.status(200).json(helpers.responseHandler(customers))
-  } catch (error) { res.status(500).json(helpers.errorHandler(null, error)) }
+    return res.status(200).json(helpers.responseHandler(customers))
+  } catch (error) { return res.status(500).json(helpers.errorHandler(null, error)) }
 }
 
 async function getUsuariosById(req: Request, res: Response) {
@@ -31,8 +33,8 @@ async function getUsuariosById(req: Request, res: Response) {
       },
       select: hidePassword
     })
-    res.status(200).json(helpers.responseHandler(customer))
-  } catch (error) { res.status(500).json(helpers.errorHandler(null, error)) }
+    return res.status(200).json(helpers.responseHandler(customer))
+  } catch (error) { return res.status(500).json(helpers.errorHandler(null, error)) }
 }
 
 // Método create --------------------------------------------------------
@@ -42,8 +44,8 @@ async function createUsuarios(req: Request, res: Response) {
   newCustomer.password = hashedPassword
   try {
     const customer = await prisma.usuarios.create({ data: newCustomer })
-    res.status(200).json(helpers.responseHandler(customer))
-  } catch (error) { res.status(500).json(helpers.errorHandler(null, error)) }
+    return res.status(200).json(helpers.responseHandler(customer))
+  } catch (error) { return res.status(500).json(helpers.errorHandler(null, error)) }
 }
 
 // Método update --------------------------------------------------------
@@ -58,8 +60,8 @@ async function updateUsuarios(req: Request, res: Response) {
       data: newCustomerData,
       select: hidePassword
     })
-    res.status(200).json(helpers.responseHandler(customer))
-  } catch (error) { res.status(500).json(helpers.errorHandler(null, error)) }
+    return res.status(200).json(helpers.responseHandler(customer))
+  } catch (error) { return res.status(500).json(helpers.errorHandler(null, error)) }
 }
 
 // Método delete --------------------------------------------------------
@@ -71,8 +73,33 @@ async function deleteUsuarios(req: Request, res: Response) {
         id: id
       }
     })
-    res.status(200).json(helpers.responseHandler(customer))
-  } catch (error) { res.status(500).json(helpers.errorHandler(null, error)) }
+    return res.status(200).json(helpers.responseHandler(customer))
+  } catch (error) { return res.status(500).json(helpers.errorHandler(null, error)) }
+}
+
+async function loginUsuario(req: Request, res: Response) {
+  const user = req.body
+  try {
+    const getUser = await prisma.usuarios.findFirst({
+      where: {
+        email: user.email
+      }
+    })
+    if (getUser) {
+      const verifyPassword = bcrypt.compareSync(user.password, getUser.password)
+      if (!verifyPassword) {
+        return res.status(401).json(helpers.errorHandler({status: 401}, 'Incorrect password'))
+      }
+        const payload = {
+          id: getUser.id,
+          email: getUser.email,
+          nombres: getUser.nombre
+        }
+        const token = jwt.sign(payload, SECRET_KEY, { expiresIn: TOKEN_LIFETIME })
+        return res.status(200).json(helpers.responseHandler(token, 'Login succesfull'))
+    } 
+    return res.status(401).json(helpers.errorHandler({status: 401}, 'User does not exist'))
+  } catch (error) { return res.status(500).json(helpers.errorHandler(null, error)) }
 }
 
 export {
@@ -80,5 +107,6 @@ export {
   getUsuariosById,
   createUsuarios,
   updateUsuarios,
-  deleteUsuarios
+  deleteUsuarios,
+  loginUsuario
 }
