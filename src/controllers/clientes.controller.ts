@@ -4,6 +4,7 @@ import { Request, Response } from "express";
 const prisma = new PrismaClient()
 
 const errorHandler = (errorData: any, errorMessage: string | any, options = {}) => {
+  console.log(errorMessage);
   return {
     data: errorData,
     message: errorMessage,
@@ -19,6 +20,7 @@ const responseHandler = (resposeData: any, responseMessage: string = 'success', 
   }
 }
 
+// Métodos de read --------------------------------------------------------
 async function getClientes(req: Request, res: Response) {
   try {
     const customers = await prisma.clientes.findMany()
@@ -30,14 +32,18 @@ async function getClientesById(req: Request, res: Response) {
   const id: number = parseInt(req.params.id)
   try {
     const customer = await prisma.clientes.findFirst({
-    where: {
+      where: {
         id: id
+      },
+      include: {
+        direccion: true
       }
     })
     res.status(200).json(responseHandler(customer))
   } catch (error) { res.status(500).json(errorHandler(null, error)) }
 }
 
+// Método create --------------------------------------------------------
 async function createClientes(req: Request, res: Response) {
   const newCustomer = req.body
   try {
@@ -46,6 +52,7 @@ async function createClientes(req: Request, res: Response) {
   } catch (error) { res.status(500).json(errorHandler(null, error)) }
 }
 
+// Método update --------------------------------------------------------
 async function updateClientes(req: Request, res: Response) {
   const id: number = parseInt(req.params.id)
   const newCustomerData = req.body
@@ -54,12 +61,16 @@ async function updateClientes(req: Request, res: Response) {
       where: {
         id: id
       },
-      data: newCustomerData
+      data: newCustomerData,
+      include: {
+        direccion: true
+      }
     })
     res.status(200).json(responseHandler(customer))
   } catch (error) { res.status(500).json(errorHandler(null, error)) }
 }
 
+// Método delete --------------------------------------------------------
 async function deleteClientes(req: Request, res: Response) {
   const id: number = parseInt(req.params.id)
   try {
