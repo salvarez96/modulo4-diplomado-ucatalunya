@@ -7,6 +7,7 @@ const prisma = new PrismaClient()
 const app = express()
 const port = 5000
 
+app.use(express.json())
 app.use('/api', allRoutes)
 
 // app.get('/', (req, res) => {
