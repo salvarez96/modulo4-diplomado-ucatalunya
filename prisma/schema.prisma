@@ -31,3 +31,10 @@ model contratos {
   id                    Int @id @default(autoincrement())
   nombre                String @db.VarChar(30)
 }
+
+model usuarios {
+  id                    Int @id @default(autoincrement())
+  nombre                String @db.VarChar(50)
+  email                 String @unique @db.VarChar(50)
+  password              String @db.VarChar(20)
+}
