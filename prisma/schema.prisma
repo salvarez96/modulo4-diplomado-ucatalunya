@@ -7,36 +7,27 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
-model Post {
-  id        Int      @id @default(autoincrement())
-  title     String   @db.VarChar(255)
-  createdAt DateTime @default(now()) @db.Timestamp(6)
-  content   String?
-  published Boolean  @default(false)
-  authorId  Int
-  author    User     @relation(fields: [authorId], references: [id], onDelete: NoAction, onUpdate: NoAction)
-  tags      Tag[]
-
-  @@map("Posts")
+model clientes {
+  id                    Int @id @default(autoincrement())
+  nombres               String @db.VarChar(50)
+  apellidos             String @db.VarChar(50)
+  tipo_documento        String @db.VarChar(2)
+  no_documento          String @db.VarChar(2)
+  telefono              String @db.VarChar(2)
+  email                 String? @unique @db.VarChar(2)
+  direccion_id          Int?
+  ciudad                String @db.VarChar(50)
+  direccion             direcciones?
 }
 
-model Profile {
-  id     Int     @id @default(autoincrement())
-  bio    String?
-  userId Int     @unique
-  user   User    @relation(fields: [userId], references: [id], onDelete: NoAction, onUpdate: NoAction)
+model direcciones {
+  id                    Int @id @default(autoincrement())
+  detalle               String @db.VarChar(100)
+  cliente               clientes @relation(fields: [clienteId], references: [id])
+  clienteId             Int @unique
 }
 
-model User {
-  id      Int      @id @default(autoincrement())
-  name    String?  @db.VarChar(255)
-  email   String   @unique @db.VarChar(255)
-  post    Post[]
-  profile Profile?
-}
-
-model Tag {
-  id Int @id @default(autoincrement())
-  name String
-  posts Post[]
+model contratos {
+  id                    Int @id @default(autoincrement())
+  nombre                String @db.VarChar(30)
 }
