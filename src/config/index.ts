@@ -1,0 +1,1 @@
+export const SECRET_KEY = 'not_so_secret_anymore_:v'
