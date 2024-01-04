@@ -12,9 +12,9 @@ model clientes {
   nombres               String @db.VarChar(50)
   apellidos             String @db.VarChar(50)
   tipo_documento        String @db.VarChar(2)
-  no_documento          String @db.VarChar(2)
-  telefono              String @db.VarChar(2)
-  email                 String? @unique @db.VarChar(2)
+  no_documento          String @db.VarChar(20)
+  telefono              String @db.VarChar(10)
+  email                 String? @unique @db.VarChar(50)
   direccion_id          Int?
   ciudad                String @db.VarChar(50)
   direccion             direcciones?
