@@ -102,11 +102,29 @@ async function loginUsuario(req: Request, res: Response) {
   } catch (error) { return res.status(500).json(helpers.errorHandler(null, error)) }
 }
 
+async function changeUserPassword(req: Request, res: Response) {
+  const user = req.body
+  const newEncryptedPassword = bcrypt.hashSync(user.password, 10)
+  user.password = newEncryptedPassword
+  try {
+    const getUser = await prisma.usuarios.update({
+      where: {
+        email: user.email
+      },
+      data: {
+        password: newEncryptedPassword
+      }
+    })
+    return res.status(200).json(helpers.responseHandler(getUser, 'Password updated succesfully'))
+  } catch (error) { res.status(500).json(helpers.errorHandler(null, error)) }
+}
+
 export {
   getUsuarios,
   getUsuariosById,
   createUsuarios,
   updateUsuarios,
   deleteUsuarios,
-  loginUsuario
+  loginUsuario,
+  changeUserPassword
 }

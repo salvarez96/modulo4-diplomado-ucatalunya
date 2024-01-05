@@ -9,6 +9,7 @@ usuariosRoutes.get('/:id', [verify, userController.getUsuariosById])
 usuariosRoutes.post('/', [verify, userController.createUsuarios])
 usuariosRoutes.post('/login', [verify, userController.loginUsuario])
 usuariosRoutes.put('/:id', [verify, userController.updateUsuarios])
+usuariosRoutes.put('/change-password', [verify, userController.changeUserPassword])
 usuariosRoutes.delete('/:id', [verify, userController.deleteUsuarios])
 
 export { usuariosRoutes }
